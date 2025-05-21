@@ -107,34 +107,7 @@ namespace SmartPistol
 
             var victimVert = new CollisionVertical(lockOn.Thing);
             var targetRange = victimVert.HeightRange;   //Get lower and upper heights of the target
-            if (targetRange.min < coverRange.max)   //Some part of the target is hidden behind some cover
-            {
-                // - It is possible for targetRange.max < coverRange.max, technically, in which case the shooter will never hit until the cover is gone.
-                // - This should be checked for in LoS -NIA
-                targetRange.min = coverRange.max;
-
-                // Target fully hidden, shift aim upwards if we're doing suppressive fire
-                if (targetRange.max <= coverRange.max && (CompFireModes?.CurrentAimMode == AimMode.SuppressFire || VerbPropsCE.ignorePartialLoSBlocker))
-                {
-                    targetRange.max = coverRange.max * 2;
-                }
-            }
-            else if (lockOn.Thing is Pawn Victim)
-            {
-
-                targetRange.min = victimVert.MiddleHeight;
-                targetRange.max = victimVert.Max;
-                targetHeight = targetRange.RandomInRange;
-                if (projectilePropsCE != null)
-                {
-                    targetHeight += projectilePropsCE.aimHeightOffset;
-                }
-                if (targetHeight > CollisionVertical.WallCollisionHeight && roofed)
-                {
-                    targetHeight = CollisionVertical.WallCollisionHeight;
-                }
-            }
-            Log.Message($"{lockOn.Thing} {victimVert.Min} - {victimVert.Max} = {targetHeight}");
+            targetHeight = victimVert.HeightRange.ClampToRange(0.98f);
             return targetHeight;
         }
         public override int ShotsPerBurst
