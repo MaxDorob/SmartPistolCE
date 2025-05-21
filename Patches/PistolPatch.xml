@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Patch>
+	<Operation Class="PatchOperationReplace">
+		<xpath>/Defs/ThingDef[defName="Gun_RB_Smartpistol"]/verbs</xpath>
+		<value>
+			<verbs>
+				<li Class="CombatExtended.VerbPropertiesCE">
+					<verbClass>SmartPistol.Verb_LaunchProjectileSmart</verbClass>
+					<hasStandardCommand>true</hasStandardCommand>
+					<defaultProjectile>Bullet_smartpistol</defaultProjectile>
+
+					<!-- https://titanfall.fandom.com/wiki/Smart_Pistol_MK5
+        The Factory Default has a 20 meter lock-on range and a 45 degree search radius.
+        It takes 0.37 to 0.65 seconds per lock on a Pilot,
+        0.1 to 0.2 seconds to lock on to Grunts and Spectres,
+        0.35 seconds to lock-on to Ordnance,
+        and a 0.1 second delay between targets
+
+        When using the Smart Pistol with the Enhanced Targeting mod, it will have a 23.8 meter lock-on range and a 36 degree search radius.
+        It'll take 0.34 to 0.59 seconds per lock on a Pilot,
+        0.1 to 0.15 seconds per lock on Grunts and Spectres,
+        and no delay between targets. -->
+
+					<warmupTime>0.8</warmupTime>
+					<range>31.9</range>
+
+					<!-- clip size
+        12
+        18 (Extended Magazine) -->
+					<burstShotCount>12</burstShotCount>
+
+					<!-- Rate of Fire
+        480 RPM (7.5 tick) -->
+					<ticksBetweenBurstShots>8</ticksBetweenBurstShots>
+
+					<soundCast>RBSmartPistol_fire</soundCast>
+					<soundCastTail>GunTail_Light</soundCastTail>
+					<muzzleFlashScale>8</muzzleFlashScale>
+					<soundAiming>RBSmartPistol_Aiming</soundAiming>
+
+					<!--CE-->
+					<recoilAmount>3.59</recoilAmount>
+				</li>
+			</verbs>
+		</value>
+	</Operation>
+
+	<Operation Class="PatchOperationConditional">
+		<xpath>Defs/ThingDef[defName="Gun_RB_Smartpistol"]/comps</xpath>
+		<nomatch Class="PatchOperationAdd">
+			<xpath>Defs/ThingDef[defName="Gun_RB_Smartpistol"]</xpath>
+			<value>
+				<comps />
+			</value>
+		</nomatch>
+	</Operation>
+
+
+	<Operation Class="PatchOperationAdd">
+		<xpath>Defs/ThingDef[defName="Gun_RB_Smartpistol"]/comps</xpath>
+		<value>
+			<li Class="CombatExtended.CompProperties_AmmoUser">
+				<magazineSize>12</magazineSize>
+				<reloadTime>1.9</reloadTime>
+				<ammoSet>AmmoSet_SmartPistol</ammoSet>
+			</li>
+			<!--<li Class="CombatExtended.CompProperties_FireModes">
+				<aiAimMode>Snapshot</aiAimMode>
+			</li>-->
+		</value>
+	</Operation>
+
+	<Operation Class="PatchOperationReplace">
+		<xpath>/Defs/ThingDef[defName="Gun_RB_Smartpistol"]/tools</xpath>
+		<value>
+			<tools>
+				<li Class="CombatExtended.ToolCE">
+					<label>grip</label>
+					<capacities>
+						<li>Blunt</li>
+					</capacities>
+					<power>8</power>
+					<cooldownTime>1.55</cooldownTime>
+					<chanceFactor>1.5</chanceFactor>
+					<armorPenetrationBlunt>2.755</armorPenetrationBlunt>
+					<linkedBodyPartsGroup>Stock</linkedBodyPartsGroup>
+				</li>
+			</tools>
+		</value>
+	</Operation>
+
+</Patch>

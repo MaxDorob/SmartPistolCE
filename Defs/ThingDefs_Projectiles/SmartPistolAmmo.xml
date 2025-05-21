@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Defs>
+
+	<ThingCategoryDef>
+		<defName>AmmoSmartPistol</defName>
+		<label>smart pistol ammo</label>
+		<parent>AmmoPistols</parent>
+		<iconPath>UI/Icons/ThingCategories/CaliberPistol</iconPath>
+	</ThingCategoryDef>
+
+	<!-- ==================== AmmoSet ========================== -->
+
+	<CombatExtended.AmmoSetDef>
+		<defName>AmmoSet_SmartPistol</defName>
+		<label>smart pistol</label>
+		<ammoTypes>
+			<Ammo_SmartPistol>Bullet_SmartPistol</Ammo_SmartPistol>
+		</ammoTypes>
+	</CombatExtended.AmmoSetDef>
+
+
+
+	<!-- ==================== Ammo ========================== -->
+
+	<ThingDef Class="CombatExtended.AmmoDef" Name="SmartPistolAmmoBase" ParentName="SmallAmmoBase" Abstract="True">
+		<description>Pistol cartridge with guided projectile.</description>
+		<statBases>
+			<Mass>0.02</Mass>
+			<Bulk>0.02</Bulk>
+		</statBases>
+		<tradeTags>
+			<li>CE_AutoEnableTrade</li>
+			<li>CE_AutoEnableCrafting</li>
+		</tradeTags>
+		<thingCategories>
+			<li>AmmoSmartPistol</li>
+		</thingCategories>
+	</ThingDef>
+
+	<ThingDef Class="CombatExtended.AmmoDef" ParentName="SmartPistolAmmoBase">
+		<defName>Ammo_SmartPistol</defName>
+		<label>guided pistol ammo</label>
+		<graphicData>
+			<texPath>Things/Ammo/Pistol/FMJ</texPath>
+			<graphicClass>Graphic_StackCount</graphicClass>
+		</graphicData>
+		<statBases>
+			<MarketValue>0.09</MarketValue>
+		</statBases>
+		<ammoClass>FullMetalJacket</ammoClass>
+		<cookOffProjectile>Bullet_SmartPistol</cookOffProjectile>
+	</ThingDef>
+
+	<!-- ================== Projectiles ================== -->
+
+	<ThingDef Name="BaseSmartPistolBullet" ParentName="BaseBulletCE" Abstract="true">
+		<thingClass>SmartPistol.Projectile_SmartBullet</thingClass>
+		<graphicData>
+			<texPath>Things/Projectile/Bullet_Small</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<projectile Class="CombatExtended.ProjectilePropertiesCE">
+			<damageDef>Bullet</damageDef>
+			<trajectoryWorker>SmartPistol.SmartBulletTrajectoryWorker</trajectoryWorker>
+			<speed>17</speed>
+			<speedGain>3.4</speedGain>
+			<fuelTicks>100</fuelTicks>
+			<dropsCasings>true</dropsCasings>
+			<casingMoteDefname>Fleck_PistolAmmoCasings</casingMoteDefname>
+			<casingFilthDefname>Filth_PistolAmmoCasings</casingFilthDefname>
+		</projectile>
+	</ThingDef>
+
+	<ThingDef ParentName="BaseSmartPistolBullet">
+		<defName>Bullet_SmartPistol</defName>
+		<label>Smart pistol bullet</label>
+		<projectile Class="CombatExtended.ProjectilePropertiesCE">
+			<damageAmountBase>18</damageAmountBase>
+			<armorPenetrationSharp>13.5</armorPenetrationSharp>
+			<armorPenetrationBlunt>10.860</armorPenetrationBlunt>
+		</projectile>
+	</ThingDef>
+
+	<!-- ==================== Recipes ========================== -->
+
+	<RecipeDef ParentName="AmmoRecipeBase">
+		<defName>MakeAmmo_SmartPistol</defName>
+		<label>make smart pistol cartridge x500</label>
+		<description>Craft 500 smart pistol cartridges.</description>
+		<jobString>Making smart pistol cartridges.</jobString>
+		<ingredients>
+			<li>
+				<filter>
+					<thingDefs>
+						<li>Steel</li>
+					</thingDefs>
+				</filter>
+				<count>22</count>
+			</li>
+		</ingredients>
+		<fixedIngredientFilter>
+			<thingDefs>
+				<li>Steel</li>
+			</thingDefs>
+		</fixedIngredientFilter>
+		<products>
+			<Ammo_SmartPistol>500</Ammo_SmartPistol>
+		</products>
+		<workAmount>2200</workAmount>
+	</RecipeDef>
+
+
+</Defs>

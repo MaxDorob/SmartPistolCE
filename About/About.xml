@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ModMetaData>
+	<name>Smart Pistol CE Patch</name>
+	<author>rabiosus, Shashlichnik ;p (aka Шашлычник ;р)</author>
+	<packageId>Shashlichnik.smartpistol</packageId>
+  <modDependencies>
+  </modDependencies>
+	<loadAfter>
+    <li>rabiosus.smartpistol</li>
+  </loadAfter>
+	<description></description>
+	<url/>
+	<supportedVersions>
+		<li>1.4</li>
+		<li>1.5</li>
+	</supportedVersions>
+</ModMetaData>
