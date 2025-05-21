@@ -27,10 +27,9 @@ namespace SmartPistol
             var ticksBeforeMaxSpeedGain = 23f;
             var speedGain = projectile.Props.speedGain * Mathf.Min(projectile.FlightTicks / ticksBeforeMaxSpeedGain, 1f);
             var delta = targetPos - projectile.ExactPosition;
-            var angle = projectile.velocity.AngleToFlat(delta);
-            if (angle > 140f)
+            var angle = Vector3.Angle(projectile.velocity, delta);
+            if (angle > 45f)
             {
-                Log.Message($"Angle between {delta} and {projectile.velocity} is {angle}");
                 return;
             }
 
