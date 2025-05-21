@@ -22,7 +22,7 @@ namespace SmartPistol
             var targetPos = currentTarget.Thing?.DrawPos ?? currentTarget.Cell.ToVector3Shifted();
             if (projectile is Projectile_SmartBullet smartBullet)
             {
-                targetPos = targetPos.WithY(smartBullet.targetHeight);
+                targetPos = targetPos.WithY(smartBullet.TargetHeight);
             }
             var ticksBeforeMaxSpeedGain = 23f;
             var speedGain = projectile.Props.speedGain * Mathf.Min(projectile.FlightTicks / ticksBeforeMaxSpeedGain, 1f);

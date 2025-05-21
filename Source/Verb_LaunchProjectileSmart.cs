@@ -70,11 +70,7 @@ namespace SmartPistol
             }
             Log.Warning($"Locked on target: {lockOn}");
             projectile.intendedTarget = lockOn;
-            if (projectile is Projectile_SmartBullet smartBullet)
-            {
-                var report = ShiftVecReportFor(lockOn, lockOn.Cell);
-                smartBullet.targetHeight = GetTargetHeight(report.target, report.cover, report.roofed, lockOn.Cell.ToVector3Shifted());
-            }
+
 
         }
         public override bool TryCastShot()
