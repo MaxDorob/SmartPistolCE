@@ -16,7 +16,7 @@ namespace SmartPistol
             {
                 if (intendedTargetThing != null && intendedTargetThing.Spawned)
                 {
-                    return new CollisionVertical(intendedTargetThing).HeightRange.ClampToRange(0.98f);
+                    return new CollisionVertical(intendedTargetThing).HeightRange.LerpThroughRange(0.98f);
                 }
                 return 0f;
             }

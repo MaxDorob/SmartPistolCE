@@ -103,7 +103,7 @@ namespace SmartPistol
 
             var victimVert = new CollisionVertical(lockOn.Thing);
             var targetRange = victimVert.HeightRange;   //Get lower and upper heights of the target
-            targetHeight = victimVert.HeightRange.ClampToRange(0.98f);
+            targetHeight = victimVert.HeightRange.LerpThroughRange(0.98f);
             return targetHeight;
         }
         public override int ShotsPerBurst
