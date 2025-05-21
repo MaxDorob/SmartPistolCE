@@ -64,12 +64,6 @@ namespace SmartPistol
 
         protected /*override*/ void BeforeProjectileLaunch(ProjectileCE projectile)
         {
-            if (!MidBurst)
-            {
-                lockManager = new TargetLockManager(CasterPawn, this, Projectile, false, HalfLockAngle, ShotsPerBurst, (Caster.TrueCenter() - lastExactPos).normalized);
-                lockManager.Initialize(currentTarget);
-                lockOn = currentTarget;
-            }
             if (lockManager.IsTargetSatisfied(lockOn))
             {
                 lockOn = lockManager.GetNextTarget();
@@ -96,6 +90,9 @@ namespace SmartPistol
         public override void WarmupComplete()
         {
             SmartPistolDef.RBSmartPistol_StartCast.PlayOneShot(new TargetInfo(this.CasterPawn.Position, this.CasterPawn.Map, false));
+            lockManager = new TargetLockManager(CasterPawn, this, Projectile, false, HalfLockAngle, verbProps.burstShotCount, (Caster.TrueCenter() - currentTarget.Cell.ToVector3Shifted()).normalized);
+            lockManager.Initialize(currentTarget);
+            lockOn = currentTarget;
             base.WarmupComplete();
         }
 
@@ -139,6 +136,18 @@ namespace SmartPistol
             }
             Log.Message($"{lockOn.Thing} {victimVert.Min} - {victimVert.Max} = {targetHeight}");
             return targetHeight;
+        }
+        public override int ShotsPerBurst
+        {
+            get
+            {
+                if (lockManager != null)
+                {
+                    return lockManager.ShotsNeeded.Sum(x => x.Value);
+                }
+                Log.Error($"lock manager was null");
+                return base.ShotsPerBurst;
+            }
         }
         public override void Reset()
         {
