@@ -62,8 +62,8 @@
 		<projectile Class="CombatExtended.ProjectilePropertiesCE">
 			<damageDef>Bullet</damageDef>
 			<trajectoryWorker>SmartPistol.SmartBulletTrajectoryWorker</trajectoryWorker>
-			<speed>17</speed>
-			<speedGain>3.4</speedGain>
+			<speed>33</speed>
+			<speedGain>8.4</speedGain>
 			<fuelTicks>100</fuelTicks>
 			<dropsCasings>true</dropsCasings>
 			<casingMoteDefname>Fleck_PistolAmmoCasings</casingMoteDefname>
@@ -75,7 +75,7 @@
 		<defName>Bullet_SmartPistol</defName>
 		<label>Smart pistol bullet</label>
 		<projectile Class="CombatExtended.ProjectilePropertiesCE">
-			<damageAmountBase>18</damageAmountBase>
+			<damageAmountBase>14</damageAmountBase>
 			<armorPenetrationSharp>13.5</armorPenetrationSharp>
 			<armorPenetrationBlunt>10.860</armorPenetrationBlunt>
 		</projectile>
