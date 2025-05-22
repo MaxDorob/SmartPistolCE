@@ -10,6 +10,26 @@ namespace SmartPistol
 {
     public class Projectile_SmartBullet : BulletCE
     {
+        private IEnumerable<Verb_LaunchProjectileSmart> Verbs
+        {
+            get
+            {
+                if (launcher is Pawn pawn && pawn.equipment != null)
+                {
+                    foreach (var verb in pawn.equipment.AllEquipmentVerbs.OfType<Verb_LaunchProjectileSmart>())
+                    {
+                        yield return verb;
+                    }
+                }
+                if (launcher is IVerbOwner verbOwner && verbOwner.VerbTracker != null)
+                {
+                    foreach (var verb in verbOwner.VerbTracker.AllVerbs.OfType<Verb_LaunchProjectileSmart>())
+                    {
+                        yield return verb;
+                    }
+                }
+            }
+        }
         public float TargetHeight
         {
             get
@@ -29,6 +49,14 @@ namespace SmartPistol
                 return true;
             }
             return base.CanCollideWith(thing, out dist);
+        }
+        public override void Impact(Thing hitThing)
+        {
+            foreach (var verb in Verbs)
+            {
+                verb.OnImpact(this);
+            }
+            base.Impact(hitThing);
         }
     }
 }

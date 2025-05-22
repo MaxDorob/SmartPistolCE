@@ -54,6 +54,7 @@ namespace SmartPistol
         private TargetLockManager lockManager;
         private LocalTargetInfo lockOn;
         private Vector3 mainDirNormalized;
+        private List<ProjectileCE> projectilesInFlight = new List<ProjectileCE>();
         private float HalfLockAngle
         {
             get
@@ -71,6 +72,10 @@ namespace SmartPistol
             }
             Log.Warning($"Locked on target: {lockOn}");
             projectile.intendedTarget = lockOn;
+            if (projectile is Projectile_SmartBullet smartBullet)
+            {
+                projectilesInFlight.Add(smartBullet);
+            }
 
 
         }
@@ -88,7 +93,7 @@ namespace SmartPistol
         {
             SmartPistolDef.RBSmartPistol_StartCast.PlayOneShot(new TargetInfo(this.CasterPawn.Position, this.CasterPawn.Map, false));
             InitializeLocks();
-            
+
             base.WarmupComplete();
         }
         private void InitializeLocks()
@@ -147,6 +152,18 @@ namespace SmartPistol
             DestroyAllLockMotes();
             lockManager = null;
         }
+        public void OnImpact(ProjectileCE projectile)
+        {
+            if (projectilesInFlight.Contains(projectile))
+            {
+                projectilesInFlight.Remove(projectile);
+                if (targetMotes.ContainsKey(projectile.intendedTarget) && projectilesInFlight.All(x => x.intendedTarget != projectile.intendedTarget))
+                {
+                    targetMotes[projectile.intendedTarget].Destroy();
+                    targetMotes.Remove(projectile.intendedTarget);
+                }
+            }
+        }
 
         private List<Vector3> bezierLabelWorldPositions = new List<Vector3>();
         private bool IsInvalid(LocalTargetInfo targ)
@@ -172,6 +189,7 @@ namespace SmartPistol
                 return false;
             }
         }
+
         public override void DrawHighlight(LocalTargetInfo mainTarget)
         {
             base.DrawHighlight(mainTarget);
