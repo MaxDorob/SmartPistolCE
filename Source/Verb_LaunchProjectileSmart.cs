@@ -93,7 +93,7 @@ namespace SmartPistol
         {
             SmartPistolDef.RBSmartPistol_StartCast.PlayOneShot(new TargetInfo(this.CasterPawn.Position, this.CasterPawn.Map, false));
             InitializeLocks();
-
+            projectilesInFlight.Clear();
             base.WarmupComplete();
         }
         private void InitializeLocks()
@@ -152,14 +152,17 @@ namespace SmartPistol
             DestroyAllLockMotes();
             lockManager = null;
         }
-        public void OnImpact(ProjectileCE projectile)
+        public void OnProjectileDestroyed(ProjectileCE projectile)
         {
             if (projectilesInFlight.Contains(projectile))
             {
                 projectilesInFlight.Remove(projectile);
-                if (targetMotes.ContainsKey(projectile.intendedTarget) && projectilesInFlight.All(x => x.intendedTarget != projectile.intendedTarget))
+                if (targetMotes.ContainsKey(projectile.intendedTarget) && !projectilesInFlight.Any(x => x.intendedTarget == projectile.intendedTarget))
+                {
+                    if (!targetMotes[projectile.intendedTarget].Destroyed)
                 {
                     targetMotes[projectile.intendedTarget].Destroy();
+                    }
                     targetMotes.Remove(projectile.intendedTarget);
                 }
             }

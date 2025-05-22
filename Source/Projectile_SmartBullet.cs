@@ -21,6 +21,20 @@ namespace SmartPistol
                         yield return verb;
                     }
                 }
+                if (launcher is Pawn pawn1 && pawn1.inventory != null)
+                {
+                    foreach (var item in pawn1.inventory.innerContainer)
+                    {
+                        var compEquippable = item.TryGetComp<CompEquippable>();
+                        if (compEquippable != null)
+                        {
+                            foreach (var verb in compEquippable.AllVerbs.OfType<Verb_LaunchProjectileSmart>())
+                            {
+                                yield return verb;
+                            }
+                        }
+                    }
+                }
                 if (launcher is IVerbOwner verbOwner && verbOwner.VerbTracker != null)
                 {
                     foreach (var verb in verbOwner.VerbTracker.AllVerbs.OfType<Verb_LaunchProjectileSmart>())
@@ -50,13 +64,13 @@ namespace SmartPistol
             }
             return base.CanCollideWith(thing, out dist);
         }
-        public override void Impact(Thing hitThing)
+        public override void Destroy(DestroyMode destroyMode)
         {
             foreach (var verb in Verbs)
             {
-                verb.OnImpact(this);
+                verb.OnProjectileDestroyed(this);
             }
-            base.Impact(hitThing);
+            base.Destroy(destroyMode);
         }
     }
 }
