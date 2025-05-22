@@ -107,7 +107,7 @@ namespace SmartPistol
                     Pawn pawn = this.currentTarget.Thing as Pawn;
                     Vector3 a = (pawn != null) ? pawn.TrueCenter() : this.currentTarget.Thing.DrawPos;
                     mainDirNormalized = (a - drawPos).normalized;
-                    this.lockManager = new TargetLockManager(this.CasterPawn, this, this.Projectile, AllowNeutral, this.HalfLockAngle, this.verbProps.burstShotCount, mainDirNormalized);
+                    this.lockManager = new TargetLockManager(this.CasterPawn, this, this.Projectile, AllowNeutral, this.HalfLockAngle, Mathf.Min(this.verbProps.burstShotCount, CompAmmo.CurMagCount), mainDirNormalized);
                     this.lockManager.Initialize(this.currentTarget);
                     lockOn = currentTarget;
                     Pawn pawn2 = this.currentTarget.Pawn;
@@ -140,7 +140,7 @@ namespace SmartPistol
                 if (lockManager != null)
                 {
                     Log.Message(string.Join("\n", lockManager.ShotsNeeded.Select(x => $"{x.Key} - {x.Value}")));
-                    return lockManager.ShotsNeeded.Sum(x => x.Value);
+                    return Mathf.Min(lockManager.ShotsNeeded.Sum(x => x.Value), CompAmmo.CurMagCount);
                 }
                 Log.Error($"lock manager was null");
                 return base.ShotsPerBurst;
@@ -160,8 +160,8 @@ namespace SmartPistol
                 if (targetMotes.ContainsKey(projectile.intendedTarget) && !projectilesInFlight.Any(x => x.intendedTarget == projectile.intendedTarget))
                 {
                     if (!targetMotes[projectile.intendedTarget].Destroyed)
-                {
-                    targetMotes[projectile.intendedTarget].Destroy();
+                    {
+                        targetMotes[projectile.intendedTarget].Destroy();
                     }
                     targetMotes.Remove(projectile.intendedTarget);
                 }
