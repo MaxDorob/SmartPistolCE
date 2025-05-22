@@ -24,11 +24,12 @@ namespace SmartPistol
             {
                 targetPos = targetPos.WithY(smartBullet.TargetHeight);
             }
-            var ticksBeforeMaxSpeedGain = 23f;
-            var speedGain = projectile.Props.speedGain * Mathf.Min(projectile.FlightTicks / ticksBeforeMaxSpeedGain, 1f);
+            var maxSpeedGainOnDistance = 8f;
+            var distanceToTarget = (projectile.ExactPosition - targetPos).magnitude;
+            var speedGain = projectile.Props.speedGain * Mathf.Pow(Mathf.Min(maxSpeedGainOnDistance / distanceToTarget, 1f), 2.5f);
             var delta = targetPos - projectile.ExactPosition;
             var angle = Vector3.Angle(projectile.velocity, delta);
-            if (angle > 45f)
+            if (angle > 80f)
             {
                 return;
             }
