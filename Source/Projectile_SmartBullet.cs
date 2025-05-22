@@ -1,7 +1,9 @@
 ﻿using CombatExtended;
+using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using Verse;
@@ -10,6 +12,61 @@ namespace SmartPistol
 {
     public class Projectile_SmartBullet : BulletCE
     {
+        [HarmonyLib.HarmonyPatch(typeof(BulletCE), nameof(BulletCE.Impact))]
+        internal static class BulletCEBeforeTakeDamage
+        {
+            public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+            {
+                var list = instructions.ToList();
+                bool patched = false;
+                var targetMethod = AccessTools.Method(typeof(Thing), nameof(Thing.TakeDamage));
+                for (int index = 0; index < list.Count; index++)
+                {
+                    if (!patched && list[index].opcode == OpCodes.Ldarg_1 && list[index + 2].Calls(targetMethod))
+                    {
+                        yield return new CodeInstruction(OpCodes.Ldarg_0);
+                        yield return new CodeInstruction(OpCodes.Ldarg_1);
+                        yield return new CodeInstruction(OpCodes.Ldloca_S, list[index + 1].operand);
+                        yield return CodeInstruction.Call(typeof(BulletCEBeforeTakeDamage), nameof(BulletCEBeforeTakeDamage.BeforeTakeDamage));
+                        patched = true;
+                        Log.Message("BulletCE patched!");
+                    }
+                    yield return list[index];
+                }
+                if (!patched)
+                {
+                    Log.Error("BulletCE patch failed!");
+                }
+            }
+            public static void BeforeTakeDamage(BulletCE projectile, Thing hitThing, ref DamageInfo dinfo)
+            {
+                if (projectile is Projectile_SmartBullet smartBullet)
+                {
+                    smartBullet.BeforeTakeDamage(hitThing, ref dinfo);
+                }
+            }
+        }
+        protected virtual void BeforeTakeDamage(Thing hitThing, ref DamageInfo dinfo)
+        {
+            if (hitThing is Pawn victim)
+            {
+                var brain = victim.health.hediffSet.GetBrain();
+                if (brain == null)
+                {
+                    return;
+                }
+
+                BodyPartRecord part = brain;
+                for (BodyPartRecord bodyPartRecord = brain; bodyPartRecord != null; bodyPartRecord = bodyPartRecord.parent)
+                {
+                    if (bodyPartRecord.depth == BodyPartDepth.Outside)
+                    {
+                        dinfo.SetHitPart(bodyPartRecord); // Skill issue
+                        break;
+                    }
+                }
+            }
+        }
         private IEnumerable<Verb_LaunchProjectileSmart> Verbs
         {
             get
