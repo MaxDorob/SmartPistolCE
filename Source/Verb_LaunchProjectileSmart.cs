@@ -199,7 +199,7 @@ namespace SmartPistol
                     IEnumerable<LocalTargetInfo> enumerable = this.GetSubTargets(casterPawn, mainTarget, AllowNeutral, this.HalfLockAngle).Take(11);
                     foreach (LocalTargetInfo targ in enumerable)
                     {
-                        if (IsInvalid(targ))
+                        if (!IsInvalid(targ))
                         {
                             Pawn pawn2 = targ.Thing as Pawn;
                             if (pawn2 != null)
