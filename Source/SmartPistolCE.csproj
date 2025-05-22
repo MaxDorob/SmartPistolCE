@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LockManagerPatches.cs" />
     <Compile Include="Projectile_SmartBullet.cs" />
     <Compile Include="SmartBulletTrajectoryWorker.cs" />
     <Compile Include="StartUp.cs" />
@@ -77,6 +78,7 @@
     <Publicize Include="Assembly-CSharp:RimWorld.Building_TurretGun.ResetForcedTarget" />
     <Publicize Include="Assembly-CSharp:Verse.Projectile.ambientSustainer" />
     <Publicize Include="Assembly-CSharp:Verse.Projectile.ticksToImpact" />
+		<Publicize Include="CombatExtended:CombatExtended.ArmorUtilityCE.GetDeflectDamageInfo"/>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
