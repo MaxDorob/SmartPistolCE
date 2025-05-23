@@ -55,6 +55,9 @@ namespace SmartPistol
         private TargetLockManager lockManager;
         private LocalTargetInfo lockOn;
         private Vector3 mainDirNormalized;
+        private int burstShotCountSaved = 0;
+        private ThingDef usedProjectileDef = null;
+        private float usedHalfLockAngle = 35f;
         private List<ProjectileCE> projectilesInFlight = new List<ProjectileCE>();
         private float HalfLockAngle
         {
@@ -113,7 +116,10 @@ namespace SmartPistol
                     Pawn pawn = this.currentTarget.Thing as Pawn;
                     Vector3 a = (pawn != null) ? pawn.TrueCenter() : this.currentTarget.Thing.DrawPos;
                     mainDirNormalized = (a - drawPos).normalized;
-                    this.lockManager = new TargetLockManager(this.CasterPawn, this, this.Projectile, AllowNeutral, this.HalfLockAngle, Mathf.Min(this.verbProps.burstShotCount, CompAmmo.CurMagCount), mainDirNormalized);
+                    burstShotCountSaved = Mathf.Min(this.verbProps.burstShotCount, CompAmmo.CurMagCount);
+                    usedProjectileDef = Projectile;
+                    usedHalfLockAngle = HalfLockAngle;
+                    this.lockManager = new TargetLockManager(this.CasterPawn, this, usedProjectileDef, AllowNeutral, this.usedHalfLockAngle, burstShotCountSaved, mainDirNormalized);
                     this.lockManager.Initialize(this.currentTarget);
                     lockOn = currentTarget;
                     Pawn pawn2 = this.currentTarget.Pawn;
@@ -158,6 +164,8 @@ namespace SmartPistol
             DestroyAllLockMotes();
             lockManager = null;
             allowNeutral = false;
+            burstShotCountSaved = 0;
+            usedProjectileDef = null;
         }
         public void OnProjectileDestroyed(ProjectileCE projectile)
         {
@@ -330,7 +338,40 @@ namespace SmartPistol
             }
             this.targetMotes.Clear();
         }
+        public override void ExposeData()
+        {
+            base.ExposeData();
+            Scribe_Values.Look(ref allowNeutral, nameof(allowNeutral));
+            Scribe_TargetInfo.Look(ref lockOn, nameof(lockOn));
+            Scribe_Values.Look(ref mainDirNormalized, nameof(mainDirNormalized));
+            Scribe_Values.Look(ref burstShotCountSaved, nameof(burstShotCountSaved));
+            Scribe_Collections.Look(ref projectilesInFlight, nameof(projectilesInFlight), LookMode.Reference);
+            Scribe_Defs.Look(ref usedProjectileDef, nameof(usedProjectileDef)); //Can't use Projectile property in next TargetLockManager initialization and not sure how to pass it, so save the projectileDef and pass it to TargetLockManager
+            Scribe_Values.Look(ref usedHalfLockAngle, nameof(usedHalfLockAngle));
 
+            if (Scribe.mode != LoadSaveMode.Saving || (lockManager == null && !currentTarget.HasThing))
+            {
+                lockManager = new TargetLockManager(CasterPawn, this, usedProjectileDef, allowNeutral, usedHalfLockAngle, burstShotCountSaved, mainDirNormalized);
+            }
+            if (lockManager != null)
+            {
+                Scribe_Collections.Look(ref lockManager.LockedTargets, nameof(lockManager.LockedTargets), LookMode.LocalTargetInfo);
+                Scribe_Collections.Look(ref lockManager.ShotsNeeded, nameof(lockManager.ShotsNeeded), LookMode.LocalTargetInfo, LookMode.Value);
+                Scribe_Collections.Look(ref lockManager.ShotsFired, nameof(lockManager.ShotsFired), LookMode.LocalTargetInfo, LookMode.Value);
+                Scribe_Values.Look(ref lockManager.lockedIndex, nameof(lockManager.lockedIndex));
+                if (Scribe.mode != LoadSaveMode.Saving)
+                {
+                    foreach (var target in lockManager.LockedTargets)
+                    {
+                        if (lockManager.ShotsNeeded[target] < lockManager.ShotsFired[target])
+                        {
+                            SpawnLockMote(target);
+                        }
+                    }
+                }
+            }
+
+        }
     }
 
 
