@@ -41,7 +41,7 @@
 		<defName>Ammo_SmartPistol</defName>
 		<label>guided pistol ammo</label>
 		<graphicData>
-			<texPath>Things/Ammo/Pistol/FMJ</texPath>
+			<texPath>Things/Ammo/Charged/SmallRegular</texPath>
 			<graphicClass>Graphic_StackCount</graphicClass>
 		</graphicData>
 		<statBases>
