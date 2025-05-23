@@ -56,15 +56,26 @@ namespace SmartPistol
                     return;
                 }
 
-                BodyPartRecord part = brain;
-                for (BodyPartRecord bodyPartRecord = brain; bodyPartRecord != null; bodyPartRecord = bodyPartRecord.parent)
+
+                BodyPartRecord part;
+                for (part = brain; part != null; part = part.parent)
                 {
-                    if (bodyPartRecord.depth == BodyPartDepth.Outside)
+                    if (part.depth == BodyPartDepth.Outside)
                     {
-                        dinfo.SetHitPart(bodyPartRecord); // Skill issue
                         break;
                     }
                 }
+                Dictionary<BodyPartRecord, float> chances = new Dictionary<BodyPartRecord, float>
+                {
+                    { part, 0.93f }// Skill issue
+                };
+                foreach (var subPart in part.parts.Where(p => p.depth == BodyPartDepth.Outside))
+                {
+                    chances.Add(subPart, 0.01f);//Small chance to hit something else
+                }
+                dinfo.SetHitPart(chances.RandomElementByWeight(x => x.Value).Key);
+
+
             }
         }
         private IEnumerable<Verb_LaunchProjectileSmart> Verbs
