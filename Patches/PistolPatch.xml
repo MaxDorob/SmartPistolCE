@@ -7,7 +7,7 @@
 				<li Class="CombatExtended.VerbPropertiesCE">
 					<verbClass>SmartPistol.Verb_LaunchProjectileSmart</verbClass>
 					<hasStandardCommand>true</hasStandardCommand>
-					<defaultProjectile>Bullet_smartpistol</defaultProjectile>
+					<defaultProjectile>Bullet_SmartPistol</defaultProjectile>
 
 					<!-- https://titanfall.fandom.com/wiki/Smart_Pistol_MK5
         The Factory Default has a 20 meter lock-on range and a 45 degree search radius.
