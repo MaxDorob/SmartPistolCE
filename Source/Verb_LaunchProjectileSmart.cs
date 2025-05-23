@@ -51,6 +51,7 @@ namespace SmartPistol
                 }
             }
         }
+        private bool allowNeutral = false;
         private TargetLockManager lockManager;
         private LocalTargetInfo lockOn;
         private Vector3 mainDirNormalized;
@@ -62,7 +63,7 @@ namespace SmartPistol
                 return EquipmentSource?.def?.GetModExtension<ModExt_SmartPistolSettings>()?.halfLockAngle ?? 35f;
             }
         }
-        protected bool AllowNeutral => false;
+        protected bool AllowNeutral => allowNeutral;
 
         protected /*override*/ void BeforeProjectileLaunch(ProjectileCE projectile)
         {
@@ -95,6 +96,11 @@ namespace SmartPistol
             InitializeLocks();
             projectilesInFlight.Clear();
             base.WarmupComplete();
+        }
+        public override void OrderForceTarget(LocalTargetInfo target)
+        {
+            allowNeutral = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+            base.OrderForceTarget(target);
         }
         private void InitializeLocks()
         {
@@ -151,6 +157,7 @@ namespace SmartPistol
             base.Reset();
             DestroyAllLockMotes();
             lockManager = null;
+            allowNeutral = false;
         }
         public void OnProjectileDestroyed(ProjectileCE projectile)
         {
@@ -217,7 +224,7 @@ namespace SmartPistol
                     float t = 0.6f;
                     Vector3 point = BezierUtil.GetPoint(drawPos, control, pawn.DrawPos, t);
                     this.bezierLabelWorldPositions.Add(point + Vector3.right);
-                    IEnumerable<LocalTargetInfo> enumerable = this.GetSubTargets(casterPawn, mainTarget, AllowNeutral, this.HalfLockAngle).Take(11);
+                    IEnumerable<LocalTargetInfo> enumerable = this.GetSubTargets(casterPawn, mainTarget, Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl), this.HalfLockAngle).Take(11);
                     foreach (LocalTargetInfo targ in enumerable)
                     {
                         if (!IsInvalid(targ))
@@ -251,7 +258,7 @@ namespace SmartPistol
             {
                 if (!this.IsInvalid(target))
                 {
-                    List<LocalTargetInfo> list = this.GetSubTargets(this.CasterPawn, target, AllowNeutral, this.HalfLockAngle).Take(11).ToList<LocalTargetInfo>();
+                    List<LocalTargetInfo> list = this.GetSubTargets(this.CasterPawn, target, Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl), this.HalfLockAngle).Take(11).ToList<LocalTargetInfo>();
                     Vector3 drawPos = this.CasterPawn.DrawPos;
                     Vector3 normalized = (pawn.DrawPos - drawPos).normalized;
                     SmartPistolLabelDrawer.DrawTargetInfoLabel(pawn, 1, normalized, this.CasterPawn, this.lockManager, this.Projectile);
