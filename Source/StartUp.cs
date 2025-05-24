@@ -15,7 +15,6 @@ namespace SmartPistol
         {
             harmony = new HarmonyLib.Harmony("SmartPistolCE");
             harmony.PatchAll();
-            Log.Warning("CE Smart pistol patches loaded");
         }
     }
 }

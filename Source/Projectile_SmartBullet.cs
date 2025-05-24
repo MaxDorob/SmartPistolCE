@@ -31,7 +31,6 @@ namespace SmartPistol
                         yield return new CodeInstruction(OpCodes.Ldloca_S, list[index + 1].operand);
                         yield return CodeInstruction.Call(typeof(BulletCEBeforeTakeDamage), nameof(BulletCEBeforeTakeDamage.BeforeTakeDamage));
                         patched = true;
-                        Log.Message("BulletCE patched!");
                     }
                     yield return list[index];
                 }

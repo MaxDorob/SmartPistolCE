@@ -36,7 +36,6 @@ namespace SmartPistol
                         yield return new CodeInstruction(OpCodes.Ldloc_S, loadOperand);
                         yield return CodeInstruction.Call(typeof(InsertBeforeProjectileLaunch), nameof(BeforeProjectileLaunch));
                         patched = true;
-                        Log.Message("Pathced!");
                     }
                 }
                 if (!patched)
@@ -81,7 +80,6 @@ namespace SmartPistol
             {
                 lockOn = lockManager.GetNextTarget();
             }
-            Log.Warning($"Locked on target: {lockOn}");
             projectile.intendedTarget = lockOn;
             if (projectile is Projectile_SmartBullet smartBullet)
             {
@@ -158,7 +156,6 @@ namespace SmartPistol
             {
                 if (lockManager != null)
                 {
-                    Log.Message(string.Join("\n", lockManager.ShotsNeeded.Select(x => $"{x.Key} - {x.Value}")));
                     return Mathf.Min(lockManager.ShotsNeeded.Sum(x => x.Value), CompAmmo.CurMagCount);
                 }
                 Log.Error($"lock manager was null");
