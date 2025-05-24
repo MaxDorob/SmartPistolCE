@@ -16,6 +16,7 @@ namespace SmartPistol
 {
     public class Verb_LaunchProjectileSmart : CombatExtended.Verb_ShootCE
     {
+        internal static List<Verb_LaunchProjectileSmart> allVerbs = new List<Verb_LaunchProjectileSmart>();
         [HarmonyLib.HarmonyPatch(typeof(Verb_LaunchProjectileCE), nameof(Verb_LaunchProjectileCE.TryCastShot))]
         internal static class InsertBeforeProjectileLaunch
         {
@@ -51,6 +52,12 @@ namespace SmartPistol
                 }
             }
         }
+
+        public Verb_LaunchProjectileSmart() : base()
+        {
+            allVerbs.Add(this);
+        }
+
         private bool allowNeutral = false;
         private TargetLockManager lockManager;
         private LocalTargetInfo lockOn;
@@ -338,6 +345,11 @@ namespace SmartPistol
             }
             this.targetMotes.Clear();
         }
+        #region SaveLoad
+        List<LocalTargetInfo> lockedTargets;
+        List<LocalTargetInfo> shotsNeededList;
+        List<LocalTargetInfo> shotsFiredList;
+        int lockedIndex = 0;
         public override void ExposeData()
         {
             base.ExposeData();
@@ -349,29 +361,90 @@ namespace SmartPistol
             Scribe_Defs.Look(ref usedProjectileDef, nameof(usedProjectileDef)); //Can't use Projectile property in next TargetLockManager initialization and not sure how to pass it, so save the projectileDef and pass it to TargetLockManager
             Scribe_Values.Look(ref usedHalfLockAngle, nameof(usedHalfLockAngle));
 
-            if (Scribe.mode != LoadSaveMode.Saving || (lockManager == null && !currentTarget.HasThing))
+            if (Scribe.mode == LoadSaveMode.Saving && lockManager != null)
+            {
+                shotsNeededList = Convert(lockManager.ShotsNeeded);
+                shotsFiredList = Convert(lockManager.ShotsFired);
+                Scribe_Collections.Look(ref shotsNeededList, nameof(shotsNeededList), LookMode.LocalTargetInfo);
+                Scribe_Collections.Look(ref shotsFiredList, nameof(shotsFiredList), LookMode.LocalTargetInfo);
+                Scribe_Collections.Look(ref lockManager.LockedTargets, nameof(lockManager.LockedTargets), LookMode.LocalTargetInfo);
+                Scribe_Values.Look(ref lockManager.lockedIndex, nameof(lockManager.lockedIndex));
+            }
+            if (Scribe.mode != LoadSaveMode.Saving)
+            {
+                Scribe_Collections.Look(ref shotsNeededList, nameof(shotsNeededList), LookMode.LocalTargetInfo);
+                Scribe_Collections.Look(ref shotsFiredList, nameof(shotsFiredList), LookMode.LocalTargetInfo);
+                Scribe_Collections.Look(ref lockedTargets, nameof(lockManager.LockedTargets), LookMode.LocalTargetInfo);
+                Scribe_Values.Look(ref lockedIndex, nameof(lockManager.lockedIndex));
+            }
+
+
+        }
+        public void PostLoadInitLockManager()
+        {
+            if (lockManager == null && lockedTargets != null)
             {
                 lockManager = new TargetLockManager(CasterPawn, this, usedProjectileDef, allowNeutral, usedHalfLockAngle, burstShotCountSaved, mainDirNormalized);
             }
-            if (lockManager != null)
+            if (lockedTargets != null)
             {
-                Scribe_Collections.Look(ref lockManager.LockedTargets, nameof(lockManager.LockedTargets), LookMode.LocalTargetInfo);
-                Scribe_Collections.Look(ref lockManager.ShotsNeeded, nameof(lockManager.ShotsNeeded), LookMode.LocalTargetInfo, LookMode.Value);
-                Scribe_Collections.Look(ref lockManager.ShotsFired, nameof(lockManager.ShotsFired), LookMode.LocalTargetInfo, LookMode.Value);
-                Scribe_Values.Look(ref lockManager.lockedIndex, nameof(lockManager.lockedIndex));
-                if (Scribe.mode != LoadSaveMode.Saving)
+                lockManager.LockedTargets = lockedTargets;
+                lockManager.ShotsNeeded = Convert(shotsNeededList);
+                lockManager.ShotsFired = Convert(shotsFiredList, shotsNeededList);
+                lockManager.lockedIndex = lockedIndex;
+
+                foreach (var target in lockManager.LockedTargets)
                 {
-                    foreach (var target in lockManager.LockedTargets)
+                    if (!lockManager.IsTargetSatisfied(target))
                     {
-                        if (lockManager.ShotsNeeded[target] < lockManager.ShotsFired[target])
-                        {
-                            SpawnLockMote(target);
-                        }
+                        SpawnLockMote(target);
+                    }
+                }
+
+                lockedTargets = null;
+                shotsNeededList = null;
+                shotsFiredList = null;
+            }
+        }
+        List<LocalTargetInfo> Convert(Dictionary<LocalTargetInfo, int> dict)
+        {
+            var result = new List<LocalTargetInfo>();
+            foreach (var pair in dict)
+            {
+                for (int i = 0; i < pair.Value; i++)
+                {
+                    result.Add(pair.Key);
+                }
+            }
+            return result;
+        }
+        Dictionary<LocalTargetInfo, int> Convert(List<LocalTargetInfo> list, IEnumerable<LocalTargetInfo> all = null)
+        {
+            var result = new Dictionary<LocalTargetInfo, int>();
+            foreach (var item in list)
+            {
+                if (result.ContainsKey(item))
+                {
+                    result[item]++;
+                }
+                else
+                {
+                    result[item] = 1;
+                }
+            }
+            if (all != null)
+            {
+                foreach (var item in all)
+                {
+                    if (!result.ContainsKey(item))
+                    {
+                        result[item] = 0;
                     }
                 }
             }
-
+            return result;
         }
+        #endregion
     }
 
 

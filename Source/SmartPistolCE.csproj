@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="LockManagerPatches.cs" />
+    <Compile Include="PostLoadInit_GameInit.cs" />
     <Compile Include="Projectile_SmartBullet.cs" />
     <Compile Include="SmartBulletTrajectoryWorker.cs" />
     <Compile Include="StartUp.cs" />
@@ -79,6 +80,7 @@
     <Publicize Include="Assembly-CSharp:Verse.Projectile.ambientSustainer" />
     <Publicize Include="Assembly-CSharp:Verse.Projectile.ticksToImpact" />
 		<Publicize Include="CombatExtended:CombatExtended.ArmorUtilityCE.GetDeflectDamageInfo"/>
+    <Publicize Include="SmartPistol" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
