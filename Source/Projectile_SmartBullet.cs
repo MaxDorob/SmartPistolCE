@@ -1,11 +1,13 @@
 ﻿using CombatExtended;
 using HarmonyLib;
+using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 using Verse;
 
 namespace SmartPistol
@@ -139,6 +141,20 @@ namespace SmartPistol
                 verb.OnProjectileDestroyed(this);
             }
             base.Destroy(destroyMode);
+        }
+
+        public override void Tick()
+        {
+            base.Tick();
+            var fleckTick = FlightTicks % 5;
+            if (fleckTick >= 4 && this.FlightTicks >= 4)
+            {
+                Map map = base.Map;
+                if (map != null)
+                {
+                    FleckMaker.ConnectingLine(ExactPosition, LastPos, Defs.SmartPistol_trail, map, 0.055f);
+                }
+            }
         }
     }
 }

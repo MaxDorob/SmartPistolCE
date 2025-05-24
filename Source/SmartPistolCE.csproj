@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Defs.cs" />
     <Compile Include="LockManagerPatches.cs" />
     <Compile Include="PostLoadInit_GameInit.cs" />
     <Compile Include="Projectile_SmartBullet.cs" />
