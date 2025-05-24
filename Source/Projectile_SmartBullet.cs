@@ -48,6 +48,7 @@ namespace SmartPistol
                 }
             }
         }
+        public override Quaternion ExactRotation => Quaternion.LookRotation((ExactPosition - LastPos).Yto0());
         protected virtual void BeforeTakeDamage(Thing hitThing, ref DamageInfo dinfo)
         {
             if (hitThing is Pawn victim)
