@@ -146,8 +146,7 @@ namespace SmartPistol
         public override void Tick()
         {
             base.Tick();
-            var fleckTick = FlightTicks % 5;
-            if (fleckTick >= 4 && this.FlightTicks >= 4)
+            if (this.FlightTicks >= 4)
             {
                 Map map = base.Map;
                 if (map != null)
